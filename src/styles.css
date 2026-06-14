@@ -1,7 +1,8 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import 'tailwindcss';
 @import 'tailwindcss-primeui';
 @import 'primeicons/primeicons.css';
 
 @layer tailwind, primeng;
+
+/* Temporarily set dark mode false by default*/
+@variant dark (false);
