@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { MenuModule } from 'primeng/menu';
 import { PanelModule } from 'primeng/panel';
@@ -7,7 +8,7 @@ import { PanelModule } from 'primeng/panel';
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
-  imports: [PanelModule, MenuModule],
+  imports: [PanelModule, MenuModule, RouterLink],
 })
 export class SidebarComponent {
   menuItems = signal<MenuItem[]>([
