@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { ThemeService } from '../../../core/services/theme.service';
 import { ButtonModule } from 'primeng/button';
 import { PanelModule } from 'primeng/panel';
+import { ThemeService } from '../../../core/services';
 
 @Component({
   selector: 'app-header',
