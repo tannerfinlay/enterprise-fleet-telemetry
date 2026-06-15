@@ -12,8 +12,24 @@ import { PanelModule } from 'primeng/panel';
 })
 export class SidebarComponent {
   menuItems = signal<MenuItem[]>([
-    { label: 'Telemetry', icon: 'pi pi-fw pi-chart-line', routerLink: '/telemetry' },
-    { label: 'Audit Log', icon: 'pi pi-fw pi-file', routerLink: '/audit-log' },
-    { label: 'Dispatch', icon: 'pi pi-fw pi-send', routerLink: '/dispatch' },
+    {
+      label: 'Telemetry',
+      icon: 'pi pi-fw pi-chart-line',
+      routerLink: '/telemetry',
+      routerLinkActiveOptions: { exact: true },
+      active: true,
+    },
+    {
+      label: 'Audit Log',
+      icon: 'pi pi-fw pi-file',
+      routerLink: '/audit-log',
+      routerLinkActiveOptions: { exact: true },
+    },
+    {
+      label: 'Dispatch',
+      icon: 'pi pi-fw pi-send',
+      routerLink: '/dispatch',
+      routerLinkActiveOptions: { exact: true },
+    },
   ]);
 }

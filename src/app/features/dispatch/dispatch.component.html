@@ -1,1 +1,238 @@
-dispatch
+<div
+  class="max-w-4xl mx-auto bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl p-8 shadow-sm"
+>
+  <div class="mb-6">
+    <h2 class="text-xl font-bold text-surface-900 dark:text-surface-0">Strategic Payload Dispatch Wizard</h2>
+    <p class="text-sm text-surface-500 dark:text-surface-400">
+      Configure logistics manifests, inventory weight distribution, and hazard clearance rules.
+    </p>
+  </div>
+
+  <form [formGroup]="wizardForm" (ngSubmit)="commitManifestDispatch()">
+    <p-stepper [value]="1" #stepper>
+      <p-step-list
+        class="flex justify-between items-center mb-8 border-b border-surface-200 dark:border-surface-800 pb-4"
+      >
+        <p-step [value]="1" class="flex items-center gap-2 font-medium cursor-pointer">Manifest Vector</p-step>
+        <p-step [value]="2" class="flex items-center gap-2 font-medium cursor-pointer">Payload Inventory</p-step>
+        <p-step [value]="3" class="flex items-center gap-2 font-medium cursor-pointer">Risk Protocols</p-step>
+      </p-step-list>
+
+      <p-step-panels class="block bg-transparent mt-4">
+        <p-step-panel [value]="1">
+          <ng-template #content>
+            <div class="space-y-4 min-h-[250px]">
+              <div class="flex flex-col gap-2">
+                <label class="text-sm font-semibold text-surface-700 dark:text-surface-300"
+                  >Manifest Identifier Code</label
+                >
+                <input
+                  pInputText
+                  formControlName="manifestId"
+                  placeholder="e.g., MNFST-2026-ALPHA"
+                  class="w-full bg-surface-50 dark:bg-surface-950 border border-surface-300 dark:border-surface-700 rounded-md p-2 text-surface-900 dark:text-surface-0"
+                />
+                @if (wizardForm.get('manifestId')?.touched && wizardForm.get('manifestId')?.invalid) {
+                  <small class="text-red-500 font-medium"
+                    >Manifest tracking code is strictly required (min 5 characters).</small
+                  >
+                }
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <label class="text-sm font-semibold text-surface-700 dark:text-surface-300"
+                  >Destination Node Assignment</label
+                >
+                <input
+                  pInputText
+                  formControlName="destinationNode"
+                  placeholder="Target Orbit Station / Launch Pad Hub"
+                  class="w-full bg-surface-50 dark:bg-surface-950 border border-surface-300 dark:border-surface-700 rounded-md p-2 text-surface-900 dark:text-surface-0"
+                />
+              </div>
+            </div>
+
+            <div class="flex justify-end mt-6">
+              <p-button
+                label="Proceed to Cargo"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                (onClick)="stepper.value.set(2)"
+                [disabled]="isManifestInvalid()"
+              ></p-button>
+            </div>
+          </ng-template>
+        </p-step-panel>
+
+        <p-step-panel [value]="2">
+          <ng-template #content>
+            <div class="space-y-4 min-h-[250px]">
+              <div class="flex justify-between items-center">
+                <h3 class="text-md font-semibold text-surface-800 dark:text-surface-200">Cargo Manifest Ledger</h3>
+                <button
+                  type="button"
+                  (click)="addCargoItem()"
+                  class="px-3 py-1.5 cursor-pointer text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-md flex items-center gap-1 transition-colors"
+                >
+                  <i class="pi pi-plus text-[10px]"></i> Add Freight Allocation
+                </button>
+              </div>
+
+              <!-- TODO: Fix Deletion Array bug -->
+              <div formArrayName="cargoItems" class="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                @for (item of cargoItems.value; track $index) {
+                  <div
+                    [formGroupName]="$index"
+                    class="grid grid-cols-12 gap-3 p-3 bg-surface-50 dark:bg-surface-950 rounded-lg border border-surface-200 dark:border-surface-800 items-center"
+                  >
+                    <div class="col-span-6 flex flex-col gap-1">
+                      <input
+                        pInputText
+                        formControlName="description"
+                        placeholder="Item Description"
+                        class="w-full text-sm bg-transparent border-b border-surface-300 dark:border-surface-700 focus:border-emerald-500 outline-none py-1 text-surface-900 dark:text-surface-0"
+                      />
+                    </div>
+                    <div class="col-span-4 flex flex-col gap-1">
+                      <p-inputNumber
+                        formControlName="weightKg"
+                        placeholder="Mass (kg)"
+                        suffix=" kg"
+                        [min]="0"
+                        inputStyleClass="w-full text-sm bg-transparent border-b border-surface-300 dark:border-surface-700 py-1 text-surface-900 dark:text-surface-0"
+                      >
+                      </p-inputNumber>
+                    </div>
+                    <div class="col-span-2 flex justify-center">
+                      <button
+                        type="button"
+                        (click)="removeCargoItem($index)"
+                        class="p-2 cursor-pointer text-surface-400 hover:text-red-500 transition-colors"
+                      >
+                        <i class="pi pi-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                } @empty {
+                  <div
+                    class="text-center py-8 border border-dashed border-surface-300 dark:border-surface-700 rounded-lg text-surface-400"
+                  >
+                    No active cargo manifests allocated. Add an item to compile telemetry metrics.
+                  </div>
+                }
+              </div>
+
+              <div
+                class="p-4 bg-surface-100 dark:bg-surface-950/50 rounded-lg flex justify-between items-center border border-surface-200 dark:border-surface-800"
+              >
+                <span class="text-sm font-medium text-surface-600 dark:text-surface-400">Aggregated Gross Mass:</span>
+                <span
+                  class="text-lg font-bold"
+                  [ngClass]="{
+                    'text-red-500': totalCargoWeight() > 10000,
+                    'text-amber-500': totalCargoWeight() >= 5000 && totalCargoWeight() <= 10000,
+                    'text-surface-900 dark:text-surface-0': totalCargoWeight() < 5000,
+                  }"
+                >
+                  {{ totalCargoWeight() | number }} kg / 10,000 kg Max
+                </span>
+              </div>
+            </div>
+
+            <div class="flex justify-between mt-6">
+              <p-button
+                label="Back"
+                severity="secondary"
+                icon="pi pi-arrow-left"
+                (onClick)="stepper.value.set(1)"
+              ></p-button>
+              <p-button
+                label="Proceed to Validation"
+                severity="primary"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                (onClick)="stepper.value.set(3)"
+                [disabled]="cargoItems.invalid"
+              ></p-button>
+            </div>
+          </ng-template>
+        </p-step-panel>
+
+        <p-step-panel [value]="3">
+          <ng-template #content>
+            <div class="space-y-4 min-h-[250px]">
+              @if (totalCargoWeight() >= 5000) {
+                <div class="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg text-amber-500 space-y-2">
+                  <div class="flex items-center gap-2 font-bold">
+                    <i class="pi pi-exclamation-triangle"></i>
+                    <span>High-Mass Threshold Security Exception Triggered</span>
+                  </div>
+                  <p class="text-xs text-surface-600 dark:text-surface-400">
+                    Total allocated mass matches or exceeds 5,000 kg. Secondary cross-field validation token required.
+                  </p>
+                </div>
+
+                <div class="flex flex-col gap-2 transition-all duration-300">
+                  <label class="text-sm font-semibold text-amber-500">Hazmat Clearance Protocol Token</label>
+                  <input
+                    pInputText
+                    formControlName="hazmatClearanceCode"
+                    placeholder="Enter Secure Cryptographic Authentication Vector"
+                    class="w-full bg-surface-50 dark:bg-surface-950 border border-amber-500/50 focus:border-amber-500 rounded-md p-2 text-surface-900 dark:text-surface-0 font-mono"
+                  />
+                  @if (
+                    wizardForm.get('hazmatClearanceCode')?.touched && wizardForm.get('hazmatClearanceCode')?.invalid
+                  ) {
+                    <small class="text-red-500 font-medium"
+                      >Clearance verification string is completely mandatory for cargo weights exceeding 5,000
+                      kg.</small
+                    >
+                  }
+                </div>
+              } @else {
+                <div
+                  class="p-8 text-center border border-dashed border-surface-300 dark:border-surface-700 rounded-lg text-emerald-500 bg-emerald-500/5"
+                >
+                  <i class="pi pi-shield text-3xl mb-2"></i>
+                  <h4 class="font-bold">Standard Risk Profile Intact</h4>
+                  <p class="text-xs text-surface-500 max-w-md mx-auto mt-1">
+                    Cargo parameters remain within base compliance limits.
+                  </p>
+                </div>
+              }
+
+              <div class="flex flex-col gap-2 pt-2">
+                <label class="text-sm font-semibold text-surface-700 dark:text-surface-300"
+                  >Operational Notes / Risk Analysis</label
+                >
+                <textarea
+                  pInputText
+                  formControlName="operationalNotes"
+                  rows="3"
+                  class="w-full bg-surface-50 dark:bg-surface-950 border border-surface-300 dark:border-surface-700 rounded-md p-2 text-sm text-surface-900 dark:text-surface-0"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="flex justify-between mt-6">
+              <p-button
+                label="Back"
+                severity="secondary"
+                icon="pi pi-arrow-left"
+                (onClick)="stepper.value.set(2)"
+              ></p-button>
+              <p-button
+                label="Commit Manifest Dispatch"
+                class="rounded-md font-semibold text-white transition-colors bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed"
+                icon="pi pi-cloud-upload"
+                iconPos="left"
+                (onClick)="commitManifestDispatch()"
+                [disabled]="wizardForm.invalid"
+              ></p-button>
+            </div>
+          </ng-template>
+        </p-step-panel>
+      </p-step-panels>
+    </p-stepper>
+  </form>
+</div>

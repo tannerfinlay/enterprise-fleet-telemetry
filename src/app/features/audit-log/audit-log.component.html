@@ -1,1 +1,136 @@
-audit log
+<div class="space-y-4">
+  <div
+    class="flex items-center justify-between p-4 bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl shadow-sm"
+  >
+    <div class="w-full md:w-96">
+      <span class="p-input-icon-left w-full relative">
+        <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-surface-400"></i>
+        <input
+          pInputText
+          type="text"
+          (input)="onSearchInputChange($event)"
+          placeholder="Debounced master system lookup (e.g., PROPULSION)..."
+          class="w-full pl-10 pr-4 py-2 bg-surface-50 dark:bg-surface-950 border border-surface-300 dark:border-surface-700 rounded-md text-sm text-surface-900 dark:text-surface-0 placeholder-surface-400 focus:outline-none focus:border-emerald-500"
+        />
+      </span>
+    </div>
+    <div class="text-xs pl-3 font-mono text-surface-500 dark:text-surface-400">
+      Viewing: {{ stateService.filteredLogs().length }} Operations / {{ stateService.filteredLogs().length }} Vectors
+    </div>
+  </div>
+
+  <div class="grid grid-cols-12 gap-3 items-start">
+    <div
+      [ngClass]="stateService.selectedIncident() ? 'col-span-12 lg:col-span-7' : 'col-span-12'"
+      class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl overflow-hidden transition-all duration-300 shadow-sm"
+    >
+      <p-table
+        [value]="stateService.filteredLogs()"
+        [rowHover]="true"
+        selectionMode="single"
+        class="w-full text-left border-collapse"
+      >
+        <ng-template pTemplate="header">
+          <tr
+            class="bg-surface-50 dark:bg-surface-950 border-b border-surface-200 dark:border-surface-800 text-xs font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wider"
+          >
+            <th class="p-4">Incident ID</th>
+            <th class="p-4">Subsystem</th>
+            <th class="p-4">Severity</th>
+            <th class="p-4">Status</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-log>
+          <tr
+            (click)="stateService.selectIncident(log)"
+            [ngClass]="{ 'bg-emerald-500/5': stateService.selectedIncident()?.id === log.id }"
+            class="border-b border-surface-200 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-950/60 cursor-pointer text-sm transition-colors text-surface-900 dark:text-surface-100"
+          >
+            <td class="p-4 font-mono font-bold text-emerald-500">{{ log.id }}</td>
+            <td class="p-4 font-medium">{{ log.subsystem }}</td>
+            <td class="p-4">
+              <span
+                [ngClass]="{
+                  'text-red-500 bg-red-500/10': log.severity === 'CRITICAL',
+                  'text-amber-500 bg-amber-500/10': log.severity === 'WARNING',
+                  'text-blue-500 bg-blue-500/10': log.severity === 'INFO',
+                }"
+                class="px-2.5 py-0.5 rounded-full text-xs font-semibold"
+              >
+                {{ log.severity }}
+              </span>
+            </td>
+            <td class="p-4">
+              <span
+                [ngClass]="log.resolved ? 'text-emerald-500' : 'text-amber-500'"
+                class="flex items-center gap-1.5 text-xs font-medium"
+              >
+                <span
+                  class="w-2 h-2 rounded-full"
+                  [ngClass]="log.resolved ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'"
+                ></span>
+                {{ log.resolved ? 'Cleared' : 'Active Exception' }}
+              </span>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    @if (stateService.selectedIncident(); as log) {
+      <div
+        class="col-span-12 lg:col-span-5 bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl p-6 shadow-md transition-all duration-300"
+      >
+        <div class="flex justify-between items-center border-b border-surface-200 dark:border-surface-800 pb-4 mb-4">
+          <div>
+            <h3 class="text-md font-bold text-surface-900 dark:text-surface-0">Telemetry Event Deep Inspection</h3>
+            <p class="text-xs text-surface-500 font-mono mt-0.5">Reference Hash: {{ log.id }}</p>
+          </div>
+          <button
+            (click)="stateService.closeIncidentDetails()"
+            class="p-1.5 cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-950 rounded-md transition-colors text-surface-400 hover:text-surface-600"
+          >
+            <i class="pi pi-times text-sm"></i>
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="p-3 bg-surface-50 dark:bg-surface-950 rounded-lg">
+              <span class="text-[11px] uppercase tracking-wider text-surface-400 font-semibold block"
+                >Timestamp Epoch</span
+              >
+              <span class="text-xs font-mono text-surface-800 dark:text-surface-200 font-medium">{{
+                log.timestamp
+              }}</span>
+            </div>
+            <div class="p-3 bg-surface-50 dark:bg-surface-950 rounded-lg">
+              <span class="text-[11px] uppercase tracking-wider text-surface-400 font-semibold block"
+                >Memory Payload Frame</span
+              >
+              <span class="text-xs font-mono text-emerald-500 font-bold">{{ log.payloadVector }}</span>
+            </div>
+          </div>
+
+          <div
+            class="p-4 bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-800 rounded-lg"
+          >
+            <span class="text-[11px] uppercase tracking-wider text-surface-400 font-semibold block mb-1"
+              >Functional Diagnostic Report</span
+            >
+            <p class="text-sm leading-relaxed text-surface-700 dark:text-surface-300">{{ log.message }}</p>
+          </div>
+
+          <div class="pt-2 flex justify-end">
+            <button
+              type="button"
+              class="px-4 py-2 cursor-pointer rounded-md text-xs font-semibold bg-surface-900 dark:bg-surface-800 text-white hover:bg-surface-800 dark:hover:bg-surface-700 transition-colors border border-transparent dark:border-surface-700"
+            >
+              <i class="pi pi-sliders-h mr-1"></i> Push Structural Diagnostics Patch
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
