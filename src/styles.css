@@ -5,4 +5,5 @@
 @layer tailwind, primeng;
 
 /* Temporarily set dark mode false by default*/
-@variant dark (false);
+/* @variant dark (false); */
+@variant dark (&:where(.dark, .dark *));

@@ -1,1 +1,15 @@
-test
+<p-panel
+  [showHeader]="false"
+  class="w-full mt-3 mr-3 mb-3 bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800"
+>
+  <div class="flex flex-row justify-between align-center pt-[18px]">
+    <span class="font-bold text-lg text-surface-900 dark:text-white inline-flex items-center justify-center"
+      >Enterprise Fleet Control Center</span
+    >
+    <p-button
+      [icon]="themeService.isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
+      (onClick)="themeService.toggleTheme()"
+      aria-label="Toggle Display Theme"
+    ></p-button>
+  </div>
+</p-panel>

@@ -1,3 +1,11 @@
-<p-panel class="h-full" header="Fleet Control">
+<p-panel
+  class="h-full m-3 bg-white dark:bg-surface-900 border-surface-200 dark:border-surface-800"
+  [pt]="{ header: 'flex items-center justify-center p-4' }"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center justify-center gap-2">
+      <span class="font-bold text-lg text-surface-900 dark:text-white">Fleet Control</span>
+    </div>
+  </ng-template>
   <p-menu class="" [model]="menuItems()" />
 </p-panel>
