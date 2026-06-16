@@ -4,6 +4,28 @@
 
 @layer tailwind, primeng;
 
-/* Temporarily set dark mode false by default*/
-/* @variant dark (false); */
 @variant dark (&:where(.dark, .dark *));
+
+.p-menu {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.p-menu .p-menu-list,
+.p-menu .p-menuitem,
+.p-menu .p-menuitem-content {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.p-menu .p-menu-submenu-label {
+  background: transparent !important;
+  color: var(--surface-400) !important;
+  font-size: 0.65rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  padding: 0.5rem 0.75rem !important;
+}

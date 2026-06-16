@@ -35,7 +35,7 @@ export class DispatchComponent implements OnDestroy {
       hazmatClearanceCode: [''],
       operationalNotes: [''],
     },
-    { validators: [this.crossFieldHazmatValidator] },
+    { validators: [this._crossFieldHazmatValidator] },
   );
 
   cargoItemsSignal = toSignal(
@@ -84,9 +84,21 @@ export class DispatchComponent implements OnDestroy {
   commitManifestDispatch(): void {
     if (this.wizardForm.invalid) return;
     console.log('[ARCHITECTURAL SUBMISSION EVENT] Payload committed:', this.wizardForm.value);
+
+    this._resetForm();
   }
 
-  private crossFieldHazmatValidator(control: AbstractControl): ValidationErrors | null {
+  private _resetForm(): void {
+    this.cargoItems.clear();
+    this.wizardForm.reset({
+      manifestId: '',
+      destinationNode: '',
+      hazmatClearanceCode: '',
+      operationalNotes: '',
+    });
+  }
+
+  private _crossFieldHazmatValidator(control: AbstractControl): ValidationErrors | null {
     const formGroup = control as FormGroup;
     if (!formGroup) return null;
 

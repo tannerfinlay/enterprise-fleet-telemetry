@@ -10,7 +10,7 @@
           type="text"
           (input)="onSearchInputChange($event)"
           placeholder="Debounced master system lookup (e.g., PROPULSION)..."
-          class="w-full pl-10 pr-4 py-2 bg-surface-50 dark:bg-surface-950 border border-surface-300 dark:border-surface-700 rounded-md text-sm text-surface-900 dark:text-surface-0 placeholder-surface-400 focus:outline-none focus:border-emerald-500"
+          class="w-full pl-10 pr-4 py-2 bg-surface-50 dark:bg-surface-950 border border-surface-300 dark:border-surface-700 rounded-md text-sm placeholder-surface-400 focus:outline-none focus:border-emerald-500"
         />
       </span>
     </div>
@@ -44,7 +44,7 @@
           <tr
             (click)="stateService.selectIncident(log)"
             [ngClass]="{ 'bg-emerald-500/5': stateService.selectedIncident()?.id === log.id }"
-            class="border-b border-surface-200 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-950/60 cursor-pointer text-sm transition-colors text-surface-900 dark:text-surface-100"
+            class="border-b border-surface-200 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-950/60 cursor-pointer text-sm transition-colors"
           >
             <td class="p-4 font-mono font-bold text-emerald-500">{{ log.id }}</td>
             <td class="p-4 font-medium">{{ log.subsystem }}</td>

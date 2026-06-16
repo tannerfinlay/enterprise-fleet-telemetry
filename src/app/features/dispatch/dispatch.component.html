@@ -23,14 +23,14 @@
           <ng-template #content>
             <div class="space-y-4 min-h-[250px]">
               <div class="flex flex-col gap-2">
-                <label class="text-sm font-semibold text-surface-700 dark:text-surface-300"
-                  >Manifest Identifier Code</label
-                >
+                <label class="text-sm font-semibold text-surface-700 dark:text-surface-300">
+                  Manifest Identifier Code
+                </label>
                 <input
                   pInputText
                   formControlName="manifestId"
                   placeholder="e.g., MNFST-2026-ALPHA"
-                  class="w-full bg-surface-50 dark:bg-surface-950 border border-surface-300 dark:border-surface-700 rounded-md p-2 text-surface-900 dark:text-surface-0"
+                  class="w-full bg-surface-50 dark:bg-surface-950 border border-surface-300 dark:border-surface-700 rounded-md p-2"
                 />
                 @if (wizardForm.get('manifestId')?.touched && wizardForm.get('manifestId')?.invalid) {
                   <small class="text-red-500 font-medium"
@@ -40,14 +40,14 @@
               </div>
 
               <div class="flex flex-col gap-2">
-                <label class="text-sm font-semibold text-surface-700 dark:text-surface-300"
-                  >Destination Node Assignment</label
-                >
+                <label class="text-sm font-semibold text-surface-700 dark:text-surface-300">
+                  Destination Node Assignment
+                </label>
                 <input
                   pInputText
                   formControlName="destinationNode"
                   placeholder="Target Orbit Station / Launch Pad Hub"
-                  class="w-full bg-surface-50 dark:bg-surface-950 border border-surface-300 dark:border-surface-700 rounded-md p-2 text-surface-900 dark:text-surface-0"
+                  class="w-full bg-surface-50 dark:bg-surface-950 border border-surface-300 dark:border-surface-700 rounded-md p-2"
                 />
               </div>
             </div>
@@ -90,7 +90,7 @@
                         pInputText
                         formControlName="description"
                         placeholder="Item Description"
-                        class="w-full text-sm bg-transparent border-b border-surface-300 dark:border-surface-700 focus:border-emerald-500 outline-none py-1 text-surface-900 dark:text-surface-0"
+                        class="w-full text-sm bg-transparent border-b border-surface-300 dark:border-surface-700 focus:border-emerald-500 outline-none py-1"
                       />
                     </div>
                     <div class="col-span-4 flex flex-col gap-1">
@@ -99,7 +99,7 @@
                         placeholder="Mass (kg)"
                         suffix=" kg"
                         [min]="0"
-                        inputStyleClass="w-full text-sm bg-transparent border-b border-surface-300 dark:border-surface-700 py-1 text-surface-900 dark:text-surface-0"
+                        inputStyleClass="w-full text-sm bg-transparent border-b border-surface-300 dark:border-surface-700 py-1"
                       >
                       </p-inputNumber>
                     </div>
@@ -155,6 +155,11 @@
                 [disabled]="cargoItems.invalid"
               ></p-button>
             </div>
+            @if (cargoItems.invalid && cargoItems.length > 0) {
+              <p class="text-right text-[11px] text-amber-500 mt-1">
+                * All allocated cargo items must have a valid description and a mass greater than 0 kg.
+              </p>
+            }
           </ng-template>
         </p-step-panel>
 
@@ -178,7 +183,7 @@
                     pInputText
                     formControlName="hazmatClearanceCode"
                     placeholder="Enter Secure Cryptographic Authentication Vector"
-                    class="w-full bg-surface-50 dark:bg-surface-950 border border-amber-500/50 focus:border-amber-500 rounded-md p-2 text-surface-900 dark:text-surface-0 font-mono"
+                    class="w-full bg-surface-50 dark:bg-surface-950 border border-amber-500/50 focus:border-amber-500 rounded-md p-2 font-mono"
                   />
                   @if (
                     wizardForm.get('hazmatClearanceCode')?.touched && wizardForm.get('hazmatClearanceCode')?.invalid
@@ -209,7 +214,7 @@
                   pInputText
                   formControlName="operationalNotes"
                   rows="3"
-                  class="w-full bg-surface-50 dark:bg-surface-950 border border-surface-300 dark:border-surface-700 rounded-md p-2 text-sm text-surface-900 dark:text-surface-0"
+                  class="w-full bg-surface-50 dark:bg-surface-950 border border-surface-300 dark:border-surface-700 rounded-md p-2 text-sm"
                 ></textarea>
               </div>
             </div>
