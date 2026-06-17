@@ -8,30 +8,29 @@ import { TableModule } from 'primeng/table';
 @Component({
   selector: 'app-audit-log',
   templateUrl: './audit-log.component.html',
-  styleUrl: './audit-log.component.css',
   imports: [CommonModule, TableModule, InputTextModule],
 })
 export class AuditLogComponent implements OnInit, OnDestroy {
   stateService = inject(AuditStateService);
 
-  // High-performance isolated input subject to safely slice keyboard layout noise
-  private searchSubject$ = new Subject<string>();
-  private destroy$ = new Subject<void>();
+  private _searchSubject$ = new Subject<string>();
+  private _destroy$ = new Subject<void>();
 
   ngOnInit(): void {
-    // Pipeline configuration completely isolated from Change Detection loops
-    this.searchSubject$.pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$)).subscribe((query) => {
-      this.stateService.updateSearchQuery(query);
-    });
+    this._searchSubject$
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this._destroy$))
+      .subscribe((query) => {
+        this.stateService.updateSearchQuery(query);
+      });
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   onSearchInputChange(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
-    this.searchSubject$.next(value);
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._searchSubject$.next(value);
   }
 }

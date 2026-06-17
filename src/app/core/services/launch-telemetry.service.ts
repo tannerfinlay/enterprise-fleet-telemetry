@@ -63,7 +63,6 @@ export class LaunchTelemetryService {
     return providers.size;
   });
 
-  // PrimeNG Dynamic Line Chart Transformation
   chartData = computed(() => {
     const launches = this.telemetryData().results;
     return {
@@ -73,7 +72,7 @@ export class LaunchTelemetryService {
           label: 'Estimated Launch Reliability (%)',
           data: launches.map((l) => l.probability || Math.floor(Math.random() * (100 - 75 + 1)) + 75),
           fill: true,
-          borderColor: '#10b981', // Tailwind emerald-500
+          borderColor: '#10b981',
           tension: 0.4,
           backgroundColor: 'rgba(16, 185, 129, 0.08)',
           pointBackgroundColor: '#10b981',

@@ -3,8 +3,8 @@ import { IncidentLog } from '../models';
 
 @Service()
 export class AuditStateService {
-  // Master Mock Data representing system warnings
-  private initialLogs: IncidentLog[] = [
+  // Mock Data representing system warnings
+  private _initialLogs: IncidentLog[] = [
     {
       id: 'ERR-901',
       timestamp: '2026-06-15 22:01:05',
@@ -44,7 +44,7 @@ export class AuditStateService {
   ];
 
   // Core State Holders using private writeable signals
-  private logsState = signal<IncidentLog[]>(this.initialLogs);
+  private logsState = signal<IncidentLog[]>(this._initialLogs);
   private searchQueryState = signal<string>('');
 
   // Selected detail state node

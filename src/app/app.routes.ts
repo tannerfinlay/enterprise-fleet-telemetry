@@ -6,6 +6,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
     children: [
       {
+        path: '',
+        redirectTo: 'telemetry',
+        pathMatch: 'full',
+      },
+      {
         path: 'telemetry',
         loadComponent: () => import('./features/telemetry/telemetry.component').then((m) => m.TelemetryComponent),
       },

@@ -1,4 +1,3 @@
-// src/app/features/dashboard-shell.component.ts
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -18,6 +17,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { AvatarModule } from 'primeng/avatar';
 import { MenuItem } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ThemeService } from '../../core/services';
 
 @Component({
   selector: 'app-dashboard',
@@ -36,18 +36,18 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
   ],
 })
 export class DashboardComponent implements OnInit {
+  themeService = inject(ThemeService);
   private router = inject(Router);
 
-  public isDarkMode = signal<boolean>(true);
-  public isRouteLoading = signal<boolean>(false); // State tracker for loading overlay
-  public navigationItems: MenuItem[] = [];
+  isRouteLoading = signal<boolean>(false);
+  navigationItems: MenuItem[] = [];
 
   ngOnInit(): void {
-    this.initializeNavigationMenu();
-    this.monitorRoutingLifecycle();
+    this._initializeNavigationMenu();
+    this._monitorRoutingLifecycle();
   }
 
-  private initializeNavigationMenu(): void {
+  private _initializeNavigationMenu(): void {
     this.navigationItems = [
       {
         label: 'Navigation Streams',
@@ -73,7 +73,7 @@ export class DashboardComponent implements OnInit {
     ];
   }
 
-  private monitorRoutingLifecycle(): void {
+  private _monitorRoutingLifecycle(): void {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.isRouteLoading.set(true);
@@ -86,15 +86,5 @@ export class DashboardComponent implements OnInit {
         setTimeout(() => this.isRouteLoading.set(false), 100);
       }
     });
-  }
-
-  public toggleTheme(): void {
-    this.isDarkMode.update((prev) => !prev);
-    const rootElement = document.documentElement;
-    if (this.isDarkMode()) {
-      rootElement.classList.add('dark', 'p-dark');
-    } else {
-      rootElement.classList.remove('dark', 'p-dark');
-    }
   }
 }

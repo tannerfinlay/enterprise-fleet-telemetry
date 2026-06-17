@@ -5,7 +5,6 @@ import { ChartModule } from 'primeng/chart';
 @Component({
   selector: 'app-telemetry',
   templateUrl: './telemetry.component.html',
-  styleUrl: './telemetry.component.css',
   imports: [ChartModule],
 })
 export class TelemetryComponent {

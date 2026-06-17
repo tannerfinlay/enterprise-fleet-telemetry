@@ -19,15 +19,14 @@ import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 @Component({
   selector: 'app-dispatch',
   templateUrl: './dispatch.component.html',
-  styleUrl: './dispatch.component.css',
   imports: [CommonModule, ReactiveFormsModule, StepperModule, ButtonModule, InputTextModule, InputNumberModule],
 })
 export class DispatchComponent implements OnDestroy {
   private fb = inject(FormBuilder);
 
-  private destroy$ = new Subject<void>();
+  private _destroy$ = new Subject<void>();
 
-  public wizardForm: FormGroup = this.fb.group(
+  wizardForm: FormGroup = this.fb.group(
     {
       manifestId: ['', [Validators.required, Validators.minLength(5)]],
       destinationNode: [''],
@@ -40,7 +39,7 @@ export class DispatchComponent implements OnDestroy {
 
   cargoItemsSignal = toSignal(
     this.wizardForm.controls['cargoItems']?.valueChanges.pipe(
-      takeUntil(this.destroy$),
+      takeUntil(this._destroy$),
       debounceTime(400),
       distinctUntilChanged(),
     ),
@@ -59,8 +58,8 @@ export class DispatchComponent implements OnDestroy {
   });
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   isManifestInvalid(): boolean {
